@@ -1,10 +1,10 @@
 Sub stock_analysis():
 
-'STEP 1: LOOP THROUGH ALL WORKSHEETS
+'LOOP THROUGH ALL WORKSHEETS
     
     For Each ws In Worksheets
     
-'STEP 2: SET COLUMN HEADERS FOR REPORT
+'SET COLUMN HEADERS FOR REPORT
 
         ws.Range("I1").Value = "Ticker"
         ws.Range("J1").Value = "Yearly Change"
@@ -16,7 +16,7 @@ Sub stock_analysis():
         ws.Range("P1").Value = "Ticker"
         ws.Range("Q1").Value = "Value"
         
-'STEP 3: SET VARIABLES
+        'SET VARIABLES
         
         Dim ticker As String
         Dim tickercounter As Double
@@ -24,6 +24,7 @@ Sub stock_analysis():
         Dim OpenPrice As Double
         Dim ClosePrice As Double
         Dim YearlyChange As Double
+        Dim PercentChange As Double
         Dim PriorAmount As Long
         PriorAmount = 2
         Dim LastRow As Long
@@ -37,13 +38,13 @@ Sub stock_analysis():
         Dim GreatestTotalVolume As Double
         GreatestTotalVolume = 0
         
-        'Determine the Last Row
+        'DETERMINE LAST ROW
         LastRow = ws.Cells(Rows.Count, 1).End(xlUp).Row
 
-        'Loop through each Row
+        'LOOP THROUGH EACH ROW
         For i = 2 To LastRow
 
-                'Add the Ticker Symbol to Rows
+                'ADD TICKER TO ROWS
                  tickercounter = tickercounter + ws.Cells(i, 7).Value
 
                 If ws.Cells(i + 1, 1).Value <> ws.Cells(i, 1).Value Then
@@ -52,52 +53,71 @@ Sub stock_analysis():
                     ws.Range("L" & ReportRow).Value = tickercounter
                     tickercounter = 0
                     
-                 'Add yearly change to report
+                    'ADD YEARLY CHANGE
+                    
                     OpenPrice = ws.Range("C" & PriorAmount)
                     ClosePrice = ws.Range("F" & i)
                     YearlyChange = ClosePrice - OpenPrice
                     ws.Range("J" & ReportRow).Value = YearlyChange
                     
-                    'Add percent change to report
+                    'ADD CONDITIONAL FORMATTING
+                    
+                    If YearlyChange > 0 Then
+                
+                    ws.Range("J" & ReportRow).Interior.Color = vbGreen
+                    
+                    ElseIf YearlyChange < 0 Then
+                    
+                    ws.Range("J" & ReportRow).Interior.Color = vbRed
+                    
+                    End If
+                    
+                    'ADD PERCENT CHANGE
+                    
                     If OpenPrice = 0 Then
                         PercentChange = 0
+                    
                     Else
                         OpenPrice = ws.Range("C" & PriorAmount)
                         PercentChange = YearlyChange / OpenPrice
+                    
                     End If
                     
-                    'Add One to Rowcounter
+                    'ADD TO ROWCOUNTER
+                    
                     ReportRow = ReportRow + 1
                     PriorAmount = i + 1
+                
                 End If
     
         Next i
 
-        LastRow = ws.Cells(Rows.Count, 11).End(xlUp).Row
+        'SET CONDITIONS FOR REPORT
         
         For i = 2 To LastRow
-            If ws.Range("K" & i).Value > ws.Range("Q2").Value Then
-                    ws.Range("Q2").Value = ws.Range("K" & i).Value
-                    ws.Range("P2").Value = ws.Range("I" & i).Value
-                End If
-
-                If ws.Range("K" & i).Value < ws.Range("Q3").Value Then
-                    ws.Range("Q3").Value = ws.Range("K" & i).Value
-                    ws.Range("P3").Value = ws.Range("I" & i).Value
-                End If
-
-                If ws.Range("L" & i).Value > ws.Range("Q4").Value Then
-                    ws.Range("Q4").Value = ws.Range("L" & i).Value
-                    ws.Range("P4").Value = ws.Range("I" & i).Value
-                End If
-
-            Next i
         
-        ' Format Double
-            ws.Range("Q2").NumberFormat = "0.00%"
-            ws.Range("Q3").NumberFormat = "0.00%"
+            If ws.Range("K" & i).Value > ws.Range("Q2").Value Then
+                ws.Range("Q2").Value = ws.Range("K" & i).Value
+                ws.Range("P2").Value = ws.Range("I" & i).Value
+            End If
+
+            If ws.Range("K" & i).Value < ws.Range("Q3").Value Then
+                ws.Range("Q3").Value = ws.Range("K" & i).Value
+                ws.Range("P3").Value = ws.Range("I" & i).Value
+            End If
+
+            If ws.Range("L" & i).Value > ws.Range("Q4").Value Then
+                ws.Range("Q4").Value = ws.Range("L" & i).Value
+                ws.Range("P4").Value = ws.Range("I" & i).Value
+            End If
+
+        Next i
+        
+        ' FORMAT DOUBLE
+        ws.Range("Q2").NumberFormat = "0.00%"
+        ws.Range("Q3").NumberFormat = "0.00%"
             
-        ' Format Table
+        ' FORMAT TABLE
         ws.Columns("I:Q").AutoFit
 
     Next ws
