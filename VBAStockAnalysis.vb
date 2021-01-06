@@ -83,6 +83,10 @@ Sub stock_analysis():
                     
                     End If
                     
+                ' Format Double To Include % Symbol And Two Decimal Places
+                    ws.Range("K" & ReportRow).NumberFormat = "0.00%"
+                    ws.Range("K" & ReportRow).Value = PercentChange
+
                     'ADD TO ROWCOUNTER
                     
                     ReportRow = ReportRow + 1
